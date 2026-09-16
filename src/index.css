@@ -1,0 +1,157 @@
+@import "tailwindcss";
+
+/* Custom Slider fill track styling */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  width: 100%;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  background: linear-gradient(90deg, #00e5ff 0%, #00e5ff var(--slider-progress, 50%), #111827 var(--slider-progress, 50%), #111827 100%);
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #00e5ff;
+  cursor: pointer;
+  margin-top: -5px;
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.6);
+  transition: transform 0.1s ease, background 0.1s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  background: #ffffff;
+}
+
+/* Valorant Combat Fight Scene Background */
+.valorant-combat-bg {
+  background-color: #080b12;
+  background-image: 
+    linear-gradient(to bottom, rgba(8, 11, 18, 0.75), rgba(8, 11, 18, 0.90)),
+    url('/src/assets/images/valorant_combat_bg_1789474852460.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+@keyframes corner-rank-oscillate {
+  0% {
+    transform: translate3d(0px, 0px, 0) rotate(0deg);
+  }
+  20% {
+    transform: translate3d(-10px, 6px, 0) rotate(-2deg);
+  }
+  40% {
+    transform: translate3d(-4px, -8px, 0) rotate(1.5deg);
+  }
+  60% {
+    transform: translate3d(8px, -4px, 0) rotate(-1.2deg);
+  }
+  80% {
+    transform: translate3d(4px, 7px, 0) rotate(2deg);
+  }
+  100% {
+    transform: translate3d(0px, 0px, 0) rotate(0deg);
+  }
+}
+
+.animate-corner-rank-oscillate {
+  animation: corner-rank-oscillate 8s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes border-pulse-glow {
+  0%, 100% {
+    border-color: rgba(255, 70, 85, 0.4);
+    box-shadow: inset 0 0 15px rgba(255, 70, 85, 0.15);
+  }
+  50% {
+    border-color: rgba(255, 70, 85, 0.9);
+    box-shadow: inset 0 0 25px rgba(255, 70, 85, 0.35);
+  }
+}
+
+.animate-vct-border {
+  animation: border-pulse-glow 3s ease-in-out infinite;
+}
+
+@keyframes electric-sweep {
+  0% {
+    transform: translateX(-160%) skewX(-20deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translateX(360%) skewX(-20deg);
+    opacity: 0;
+  }
+}
+
+.animate-electric-sweep {
+  animation: electric-sweep 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes electric-flicker {
+  0%, 100% {
+    opacity: 0.9;
+    filter: drop-shadow(0 0 12px rgba(0, 229, 255, 0.7)) drop-shadow(0 0 25px rgba(0, 180, 255, 0.4));
+  }
+  24% {
+    opacity: 1;
+    filter: drop-shadow(0 0 18px rgba(0, 245, 255, 0.95)) drop-shadow(0 0 38px rgba(0, 220, 255, 0.7));
+  }
+  48% {
+    opacity: 0.82;
+    filter: drop-shadow(0 0 9px rgba(0, 210, 255, 0.6)) drop-shadow(0 0 20px rgba(0, 180, 255, 0.35));
+  }
+  72% {
+    opacity: 0.98;
+    filter: drop-shadow(0 0 15px rgba(0, 240, 255, 0.9)) drop-shadow(0 0 32px rgba(0, 200, 255, 0.6));
+  }
+}
+
+@keyframes shimmer-wave {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-shimmer-wave {
+  animation: shimmer-wave 3s linear infinite;
+}
+
+@keyframes spin-3d {
+  0% {
+    transform: rotateY(0deg);
+  }
+  100% {
+    transform: rotateY(360deg);
+  }
+}
+
+.animate-3d-spin {
+  animation: spin-3d 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  backface-visibility: visible;
+}
+
