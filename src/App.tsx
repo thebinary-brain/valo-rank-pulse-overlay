@@ -37,49 +37,7 @@ export default function App() {
 
   // Main Overlay Config
   const [config, setConfig] = useState<OverlayConfig>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem(STORAGE_KEY_CONFIG);
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          return {
-            ...parsed,
-            toggles: {
-              showRankIcon: true,
-              showPlayerName: true,
-              showTotalRR: true,
-              showWinStreak: true,
-              showWinLoss: true,
-              showWinRate: true,
-              showNetRR: true,
-              showLastMatches: true,
-              showAnimatedRankBackground: true,
-              ...(parsed.toggles || {}),
-            },
-            recentMatches:
-              parsed.recentMatches && parsed.recentMatches.length > 0
-                ? parsed.recentMatches
-                : DEFAULT_RECENT_MATCHES,
-            henrik: {
-              apiKey: '',
-              riotId: 'TenZ',
-              tag: '0001',
-              region: 'ap',
-              lastMatchesCount: 3,
-              autoSync: false,
-              syncIntervalSeconds: 30,
-              ...(parsed.henrik || {}),
-            },
-            opacity: typeof parsed.opacity === 'number' ? parsed.opacity : parsed.overlayOpacity ?? 1.0,
-            overlayOpacity: typeof parsed.opacity === 'number' ? parsed.opacity : parsed.overlayOpacity ?? 1.0,
-          };
-        } catch {
-          // ignore
-        }
-      }
-    }
-
-    return {
+    let baseConfig: OverlayConfig = {
       playerName: 'TenZ',
       playerTag: '0001',
       currentRankId: 'immortal-2',
@@ -129,6 +87,98 @@ export default function App() {
         syncIntervalSeconds: 30,
       },
     };
+
+    // Load from LocalStorage if not standalone overlay mode
+    const isOverlayMode =
+      typeof window !== 'undefined' &&
+      (new URLSearchParams(window.location.search).get('overlay') === 'true' ||
+        new URLSearchParams(window.location.search).get('transparent') === 'true');
+
+    if (typeof window !== 'undefined' && !isOverlayMode) {
+      const saved = localStorage.getItem(STORAGE_KEY_CONFIG);
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          baseConfig = {
+            ...baseConfig,
+            ...parsed,
+            toggles: {
+              ...baseConfig.toggles,
+              ...(parsed.toggles || {}),
+            },
+            henrik: {
+              ...baseConfig.henrik,
+              ...(parsed.henrik || {}),
+            },
+          };
+        } catch {
+          // ignore
+        }
+      }
+    }
+
+    // Read URL Search parameters (critical for OBS and sharing configurations)
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+
+      const themeParam = urlParams.get('theme');
+      if (themeParam) baseConfig.theme = themeParam as any;
+
+      const opacityParam = urlParams.get('opacity');
+      if (opacityParam) {
+        const opVal = parseFloat(opacityParam);
+        if (!isNaN(opVal)) {
+          baseConfig.opacity = opVal;
+          baseConfig.overlayOpacity = opVal;
+        }
+      }
+
+      const scaleParam = urlParams.get('scale');
+      if (scaleParam) {
+        const scaleVal = parseFloat(scaleParam);
+        if (!isNaN(scaleVal)) baseConfig.scale = scaleVal;
+      }
+
+      const glowParam = urlParams.get('glowIntensity');
+      if (glowParam) baseConfig.glowIntensity = glowParam as any;
+
+      const backdropParam = urlParams.get('backdropOpacity');
+      if (backdropParam) {
+        const bdVal = parseFloat(backdropParam);
+        if (!isNaN(bdVal)) baseConfig.backdropOpacity = bdVal;
+      }
+
+      // Henrik credentials
+      const riotIdParam = urlParams.get('riotId');
+      if (riotIdParam) {
+        baseConfig.henrik.riotId = riotIdParam;
+        baseConfig.playerName = riotIdParam;
+      }
+
+      const tagParam = urlParams.get('tag');
+      if (tagParam) {
+        baseConfig.henrik.tag = tagParam;
+        baseConfig.playerTag = tagParam;
+      }
+
+      const regionParam = urlParams.get('region');
+      if (regionParam) baseConfig.henrik.region = regionParam as any;
+
+      const apiKeyParam = urlParams.get('apiKey');
+      if (apiKeyParam) baseConfig.henrik.apiKey = apiKeyParam;
+
+      // Toggle parameters
+      if (baseConfig.toggles) {
+        Object.keys(baseConfig.toggles).forEach((key) => {
+          const toggleParam = urlParams.get(key);
+          if (toggleParam !== null) {
+            (baseConfig.toggles as any)[key] = toggleParam === 'true';
+          }
+        });
+      }
+    }
+
+    return baseConfig;
   });
 
   // Save config changes to localStorage
@@ -263,9 +313,47 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Compute OBS URL
+  // Trigger automatic sync when loaded in OBS Browser Source mode with valid config
+  useEffect(() => {
+    if (isOverlayModeFromUrl && config.henrik.apiKey && config.henrik.apiKey.trim() && config.henrik.riotId) {
+      // Run first sync immediately
+      handleSyncLive();
+
+      // Poll every 30 seconds inside OBS to keep stats live
+      const intervalId = setInterval(() => {
+        handleSyncLive();
+      }, 30000);
+
+      return () => clearInterval(intervalId);
+    }
+  }, [isOverlayModeFromUrl, handleSyncLive, config.henrik.apiKey, config.henrik.riotId]);
+
+  // Compute OBS URL with all active configurations tokenized so OBS can fetch live stats dynamically
   const origin = typeof window !== 'undefined' ? window.location.origin : '';
-  const obsUrl = `${origin}/?overlay=true&theme=${config.theme}&opacity=${config.opacity ?? config.overlayOpacity ?? 1}`;
+  const obsUrl = (() => {
+    const params = new URLSearchParams();
+    params.set('overlay', 'true');
+    params.set('theme', config.theme);
+    params.set('opacity', String(config.opacity ?? config.overlayOpacity ?? 1));
+    params.set('scale', String(config.scale ?? 1));
+    params.set('glowIntensity', config.glowIntensity ?? 'high');
+    params.set('backdropOpacity', String(config.backdropOpacity ?? 0.92));
+
+    // Henrik credentials
+    if (config.henrik.riotId) params.set('riotId', config.henrik.riotId);
+    if (config.henrik.tag) params.set('tag', config.henrik.tag);
+    if (config.henrik.region) params.set('region', config.henrik.region);
+    if (config.henrik.apiKey) params.set('apiKey', config.henrik.apiKey);
+
+    // Toggles
+    if (config.toggles) {
+      Object.entries(config.toggles).forEach(([key, val]) => {
+        params.set(key, String(val));
+      });
+    }
+
+    return `${origin}/?${params.toString()}`;
+  })();
 
   // -------------------------------------------------------------
   // If loaded in OBS Browser Source mode: Render transparent overlay ONLY!

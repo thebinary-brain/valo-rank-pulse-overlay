@@ -582,7 +582,7 @@ export const HudConsole: React.FC<HudConsoleProps> = ({
           </div>
 
 
-          {/* GENERATE PREVIEW MODERN BUTTON */}
+          {/* SYNC LIVE STATS & UPDATE LINK BUTTON */}
           <button
             type="button"
             onClick={onSync}
@@ -590,7 +590,7 @@ export const HudConsole: React.FC<HudConsoleProps> = ({
             className="w-full relative flex items-center justify-center gap-2 py-3 px-6 rounded-xl bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-black font-black font-sans uppercase tracking-wider text-xs sm:text-sm shadow-[0_0_24px_rgba(0,210,255,0.4)] hover:shadow-[0_0_32px_rgba(0,210,255,0.6)] transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
-            <span>{isSyncing ? 'Fetching Live MMR...' : 'Generate Preview'}</span>
+            <span>{isSyncing ? 'Fetching Live MMR...' : 'Sync Live Stats & Update Link'}</span>
           </button>
 
           {/* OBS BROWSER SOURCE BAR WITH MODERN COPY CAPSULE */}

@@ -106,7 +106,7 @@ export const InstructionStepper: React.FC = () => {
             </h3>
           </div>
           <p className="text-sm sm:text-base text-gray-300 leading-relaxed font-sans mb-3.5">
-            Click <strong>Generate Preview</strong> and copy the tokenized overlay link. In OBS or Streamlabs, add a new <strong>Browser Source</strong> and paste the URL.
+            Click <strong>Sync Live Stats & Update Link</strong> and copy the tokenized overlay link. In OBS or Streamlabs, add a new <strong>Browser Source</strong> and paste the URL.
           </p>
           <div className="bg-[#06080d] border border-white/10 rounded-xl p-3 flex flex-wrap items-center justify-between gap-3 text-xs font-mono text-gray-300">
             <div className="flex items-center gap-2">
