@@ -108,16 +108,21 @@ export const InstructionStepper: React.FC = () => {
           <p className="text-sm sm:text-base text-gray-300 leading-relaxed font-sans mb-3.5">
             Click <strong>Sync Live Stats & Update Link</strong> and copy the tokenized overlay link. In OBS or Streamlabs, add a new <strong>Browser Source</strong> and paste the URL.
           </p>
-          <div className="bg-[#06080d] border border-white/10 rounded-xl p-3 flex flex-wrap items-center justify-between gap-3 text-xs font-mono text-gray-300">
-            <div className="flex items-center gap-2">
-              <Monitor className="w-4 h-4 text-cyan-400" />
-              <span>Recommended Resolution:</span>
+          <div className="bg-[#06080d] border border-white/10 rounded-xl p-3.5 flex flex-col gap-2.5 text-xs font-mono text-gray-300">
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <div className="flex items-center gap-2">
+                <Monitor className="w-4 h-4 text-cyan-400" />
+                <span>Recommended OBS Canvas:</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="bg-cyan-950/60 border border-cyan-500/40 text-cyan-300 px-2.5 py-0.5 rounded font-bold">
+                  1920 × 1080
+                </span>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="bg-cyan-950/60 border border-cyan-500/40 text-cyan-300 px-2.5 py-0.5 rounded font-bold">
-                1920 × 1080
-              </span>
-            </div>
+            <p className="text-[11px] text-gray-400 leading-normal font-sans">
+              The overlay anchors neatly to the **top-left corner** of your browser source. By keeping OBS set to standard resolutions (like 1920×1080 or 1280×720), the text and rank badges render at 100% native vector crispness with zero blurriness, completely bypassing pixel-compression downscaling!
+            </p>
           </div>
         </div>
       </div>

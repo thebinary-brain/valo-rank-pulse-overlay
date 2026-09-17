@@ -362,14 +362,16 @@ export default function App() {
     return (
       <main
         id="obs-stream-overlay"
-        className="min-h-screen w-full flex items-center justify-center bg-transparent overflow-hidden p-4 select-none"
+        className="fixed inset-0 w-screen h-screen bg-transparent overflow-hidden select-none p-0 m-0"
       >
-        <OverlayWidget
-          config={config}
-          isStandalone={true}
-          celebrationType={celebrationType}
-          onDismissCelebration={() => setCelebrationType(null)}
-        />
+        <div className="absolute top-0 left-0 p-4">
+          <OverlayWidget
+            config={config}
+            isStandalone={true}
+            celebrationType={celebrationType}
+            onDismissCelebration={() => setCelebrationType(null)}
+          />
+        </div>
       </main>
     );
   }
