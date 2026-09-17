@@ -48,7 +48,7 @@ export async function fetchHenrikData(
   const emptyResult = (errorMessage: string): HenrikFetchResult => ({
     success: false,
     error: errorMessage,
-    rank: RANKS[17], // Diamond 2 fallback
+    rank: RANKS[0], // Unranked fallback
     currentRR: 0,
     wins: 0,
     losses: 0,
@@ -228,6 +228,25 @@ export async function fetchHenrikData(
       }
     }
 
+    // Scan match history of unranked users who are playing competitive queue.
+    // At the start of a season, the player is unranked but previous matches in rawList show their rank.
+    if (currentTierNum === 0 || !currentTierName || currentTierName.toLowerCase() === 'unranked') {
+      for (const item of rawList) {
+        const itemTierNum = item.tier?.id ?? item.currenttier ?? (typeof item.ranking_tier === 'number' ? item.ranking_tier : 0);
+        const itemTierName = item.tier?.name ?? item.currenttierpatched ?? '';
+        if (itemTierNum > 0) {
+          currentTierNum = itemTierNum;
+          currentTierName = itemTierName;
+          if (typeof item.ranking_in_tier === 'number') {
+            currentRR = item.ranking_in_tier;
+          } else if (typeof item.rr === 'number') {
+            currentRR = item.rr;
+          }
+          break;
+        }
+      }
+    }
+
     // STRICT CHECK: If no rank and no matches were found in this region, reject
     if (currentTierNum === 0 && !currentTierName && rawList.length === 0) {
       return emptyResult(
@@ -267,11 +286,13 @@ export async function fetchHenrikData(
     const activeMatches = allMatches.slice(0, matchLimit);
 
     // Resolve Rank
-    let rank = RANKS[17]; // default Diamond 2
+    let rank = RANKS[0]; // Default fallback for Unranked is RANKS[0] (Unranked), NOT RANKS[17] (Diamond 2)
     if (currentTierNum > 0) {
       rank = getRankByTierNumber(currentTierNum);
-    } else if (currentTierName) {
+    } else if (currentTierName && currentTierName.toLowerCase() !== 'unranked') {
       rank = getRankByName(currentTierName);
+    } else {
+      rank = RANKS[0]; // Explicitly Unranked
     }
 
     // Calculate Wins and Losses

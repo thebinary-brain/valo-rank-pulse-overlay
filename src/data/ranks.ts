@@ -422,7 +422,7 @@ export const AGENTS = [
 
 export function getRankById(id: string): RankDefinition {
   const found = RANKS.find((r) => r.id === id);
-  return found || RANKS[17]; // default Diamond 2
+  return found || RANKS[0]; // default Unranked
 }
 
 export function getRankByTierNumber(tierNum: number): RankDefinition {
@@ -435,19 +435,22 @@ export function getRankByTierNumber(tierNum: number): RankDefinition {
     return r.iconUrl.includes(`/${tierNum}/`) || r.tierNumber === tierNum;
   });
 
-  return found || RANKS[17];
+  return found || RANKS[0]; // default Unranked
 }
 
 export function getRankByName(name: string): RankDefinition {
-  if (!name) return RANKS[17];
+  if (!name) return RANKS[0];
   const clean = name.toLowerCase().replace(/\s+/g, '');
+  if (clean === 'unrated' || clean === 'unranked' || clean === 'unr') {
+    return RANKS[0];
+  }
   const found = RANKS.find((r) => {
     const rClean = r.name.toLowerCase().replace(/\s+/g, '');
     const rShort = r.shortName.toLowerCase();
     const rId = r.id.toLowerCase().replace('-', '');
     return rClean === clean || rShort === clean || rId === clean;
   });
-  return found || RANKS[17];
+  return found || RANKS[0]; // default Unranked
 }
 
 export function getNextRank(currentId: string): RankDefinition | null {

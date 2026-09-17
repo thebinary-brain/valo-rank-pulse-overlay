@@ -193,17 +193,26 @@ export const OverlayWidget: React.FC<OverlayWidgetProps> = ({
   const cardBgColor = `rgba(12, 16, 23, ${backdropAlpha})`;
 
   // Toggles shortcuts
+  const isUnranked = rank.id === 'unranked';
+
   const {
     showRankIcon = true,
     showPlayerName = true,
-    showTotalRR = true,
-    showWinStreak = true,
-    showWinLoss = true,
-    showWinRate = true,
-    showNetRR = true,
-    showLastMatches = true,
+    showTotalRR: rawTotalRR = true,
+    showWinStreak: rawWinStreak = true,
+    showWinLoss: rawWinLoss = true,
+    showWinRate: rawWinRate = true,
+    showNetRR: rawNetRR = true,
+    showLastMatches: rawLastMatches = true,
     showAnimatedRankBackground = true,
   } = config.toggles || {};
+
+  const showTotalRR = !isUnranked && rawTotalRR;
+  const showWinStreak = !isUnranked && rawWinStreak;
+  const showWinLoss = !isUnranked && rawWinLoss;
+  const showWinRate = !isUnranked && rawWinRate;
+  const showNetRR = !isUnranked && rawNetRR;
+  const showLastMatches = !isUnranked && rawLastMatches;
 
   // -------------------------------------------------------------
   // Configurable Recent Matches (Last 1-5 Matches)
@@ -552,13 +561,23 @@ export const OverlayWidget: React.FC<OverlayWidgetProps> = ({
                 )}
 
               {/* Bottom Configurable Stats */}
-              <div className="flex items-center justify-between gap-2 mt-2 pt-1.5 border-t border-white/10">
-                <div>{renderWinLossText()}</div>
-                <div className="flex items-center gap-1.5">
-                  {renderNetRR()}
-                  {renderStreak()}
+              {!isUnranked && (
+                <div className="flex items-center justify-between gap-2 mt-2 pt-1.5 border-t border-white/10">
+                  <div>{renderWinLossText()}</div>
+                  <div className="flex items-center gap-1.5">
+                    {renderNetRR()}
+                    {renderStreak()}
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {isUnranked && (
+                <div className="mt-2 pt-2 border-t border-white/10 text-center">
+                  <span className="text-[10px] tracking-widest font-mono uppercase text-gray-400 font-bold">
+                    PLACEMENT MATCHES PENDING
+                  </span>
+                </div>
+              )}
 
               {/* Last Matches Strip */}
               {showLastMatches && (
@@ -682,13 +701,23 @@ if (config.theme === 'vct_2021') {
             )}
 
             {/* Bottom Configurable Stats */}
-            <div className="flex items-center justify-between gap-3 mt-1.5 pt-1.5 border-t border-white/5">
-              <div>{renderWinLossText()}</div>
-              <div className="flex items-center gap-1.5">
-                {renderNetRR()}
-                {renderStreak()}
+            {!isUnranked && (
+              <div className="flex items-center justify-between gap-3 mt-1.5 pt-1.5 border-t border-white/5">
+                <div>{renderWinLossText()}</div>
+                <div className="flex items-center gap-1.5">
+                  {renderNetRR()}
+                  {renderStreak()}
+                </div>
               </div>
-            </div>
+            )}
+
+            {isUnranked && (
+              <div className="mt-1.5 pt-1.5 border-t border-white/5 text-center">
+                <span className="text-[10px] tracking-widest font-mono uppercase text-[#ffd700] font-bold">
+                  PLACEMENT MATCHES PENDING
+                </span>
+              </div>
+            )}
 
             {/* Last Matches Strip */}
             {showLastMatches && (
@@ -758,13 +787,23 @@ if (config.theme === 'vct_2021') {
               )}
 
               {/* Bottom Configurable Stats */}
-              <div className="flex items-center justify-between gap-2 mt-2 pt-1.5 border-t border-white/10">
-                <div>{renderWinLossText()}</div>
-                <div className="flex items-center gap-1.5">
-                  {renderNetRR()}
-                  {renderStreak()}
+              {!isUnranked && (
+                <div className="flex items-center justify-between gap-2 mt-2 pt-1.5 border-t border-white/10">
+                  <div>{renderWinLossText()}</div>
+                  <div className="flex items-center gap-1.5">
+                    {renderNetRR()}
+                    {renderStreak()}
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {isUnranked && (
+                <div className="mt-2 pt-2 border-t border-white/10 text-center">
+                  <span className="text-[10px] tracking-widest font-mono uppercase text-gray-300 font-bold">
+                    PLACEMENT MATCHES PENDING
+                  </span>
+                </div>
+              )}
 
               {/* Last Matches Strip */}
               {showLastMatches && (
@@ -881,6 +920,15 @@ if (config.theme === 'vct_2021') {
                 {renderRecentMatches({ compact: true })}
               </>
             )}
+
+            {isUnranked && (
+              <>
+                <div className="w-px h-4 bg-white/20" />
+                <span className="text-[10px] tracking-wider font-mono uppercase text-gray-300 font-bold">
+                  PLACEMENTS
+                </span>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -944,13 +992,23 @@ if (config.theme === 'vct_2021') {
                 )}
 
                 {/* Bottom Configurable Stats */}
-                <div className="flex items-center justify-between gap-2 mt-2 pt-1 border-t border-gray-800">
-                  <div>{renderWinLossText()}</div>
-                  <div className="flex items-center gap-1.5">
-                    {renderNetRR()}
-                    {renderStreak()}
+                {!isUnranked && (
+                  <div className="flex items-center justify-between gap-2 mt-2 pt-1 border-t border-gray-800">
+                    <div>{renderWinLossText()}</div>
+                    <div className="flex items-center gap-1.5">
+                      {renderNetRR()}
+                      {renderStreak()}
+                    </div>
                   </div>
-                </div>
+                )}
+
+                {isUnranked && (
+                  <div className="mt-2 pt-1 border-t border-gray-800 text-center">
+                    <span className="text-[10px] tracking-widest font-mono uppercase text-gray-400 font-bold">
+                      PLACEMENT MATCHES PENDING
+                    </span>
+                  </div>
+                )}
 
                 {/* Last Matches Strip */}
                 {showLastMatches && (
@@ -1065,18 +1123,28 @@ if (config.theme === 'vct_2021') {
             </div>
           )}
 
-          <div className="pt-2 border-t border-white/10 w-full flex flex-col items-center gap-1.5">
-            {renderWinLossText()}
-            <div className="flex items-center gap-1.5 flex-wrap justify-center">
-              {renderNetRR()}
-              {renderStreak()}
-            </div>
-            {showLastMatches && (
-              <div className="pt-1.5 border-t border-white/10 w-full flex justify-center">
-                {renderRecentMatches({ compact: true, vertical: true })}
+          {!isUnranked && (
+            <div className="pt-2 border-t border-white/10 w-full flex flex-col items-center gap-1.5">
+              {renderWinLossText()}
+              <div className="flex items-center gap-1.5 flex-wrap justify-center">
+                {renderNetRR()}
+                {renderStreak()}
               </div>
-            )}
-          </div>
+              {showLastMatches && (
+                <div className="pt-1.5 border-t border-white/10 w-full flex justify-center">
+                  {renderRecentMatches({ compact: true, vertical: true })}
+                </div>
+              )}
+            </div>
+          )}
+
+          {isUnranked && (
+            <div className="pt-2 border-t border-white/10 w-full text-center">
+              <span className="text-[10px] tracking-widest font-mono uppercase text-gray-400 font-bold">
+                PLACEMENT MATCHES PENDING
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </div>

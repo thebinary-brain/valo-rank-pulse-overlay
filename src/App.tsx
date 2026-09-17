@@ -122,6 +122,19 @@ export default function App() {
           // ignore
         }
       }
+    } else if (isOverlayMode) {
+      // Clear TenZ/Immortal placeholder stats for stream overlays during load latency
+      baseConfig.playerName = 'Loading...';
+      baseConfig.playerTag = '';
+      baseConfig.currentRankId = 'unranked';
+      baseConfig.currentRR = 0;
+      baseConfig.peakRank = 'Unranked';
+      baseConfig.wins = 0;
+      baseConfig.losses = 0;
+      baseConfig.streakType = 'none';
+      baseConfig.streakCount = 0;
+      baseConfig.netRR = 0;
+      baseConfig.recentMatches = [];
     }
 
     // Read URL Search parameters (critical for OBS and sharing configurations)
