@@ -88,14 +88,21 @@ export default function App() {
       },
     };
 
-    // Load from LocalStorage if not standalone overlay mode
+    // Load from SessionStorage if not standalone overlay mode
     const isOverlayMode =
       typeof window !== 'undefined' &&
       (new URLSearchParams(window.location.search).get('overlay') === 'true' ||
         new URLSearchParams(window.location.search).get('transparent') === 'true');
 
     if (typeof window !== 'undefined' && !isOverlayMode) {
-      const saved = localStorage.getItem(STORAGE_KEY_CONFIG);
+      // Clear legacy localStorage to prevent pulling someone else's cached credentials
+      try {
+        localStorage.removeItem(STORAGE_KEY_CONFIG);
+      } catch {
+        // ignore
+      }
+
+      const saved = sessionStorage.getItem(STORAGE_KEY_CONFIG);
       if (saved) {
         try {
           const parsed = JSON.parse(saved);
@@ -181,10 +188,10 @@ export default function App() {
     return baseConfig;
   });
 
-  // Save config changes to localStorage
+  // Save config changes to sessionStorage
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY_CONFIG, JSON.stringify(config));
+      sessionStorage.setItem(STORAGE_KEY_CONFIG, JSON.stringify(config));
     } catch {
       // ignore
     }

@@ -28,9 +28,11 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   private handleReset = () => {
-    // Clear potentially corrupted local state and reload cleanly
+    // Clear potentially corrupted session/local state and reload cleanly
     try {
       localStorage.removeItem('valorant_stream_overlay_config');
+      localStorage.removeItem('valorant_overlay_henrik_config_v4');
+      sessionStorage.removeItem('valorant_overlay_henrik_config_v4');
     } catch {
       // ignore
     }
