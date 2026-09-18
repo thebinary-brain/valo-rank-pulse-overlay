@@ -29,6 +29,7 @@ export default function App() {
 
   // Sync state
   const [isSyncing, setIsSyncing] = useState(false);
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
   const [syncStatus, setSyncStatus] = useState<{
     success: boolean;
     message: string;
@@ -284,6 +285,7 @@ export default function App() {
       });
     } finally {
       setIsSyncing(false);
+      setHasLoadedOnce(true);
     }
   }, []);
 
@@ -379,10 +381,15 @@ export default function App() {
   // If loaded in OBS Browser Source mode: Render transparent overlay ONLY!
   // -------------------------------------------------------------
   if (isOverlayModeFromUrl) {
+    const hasCredsToSync = !!(config.henrik.apiKey && config.henrik.apiKey.trim() && config.henrik.riotId && config.henrik.tag);
+    const shouldHideForLoading = hasCredsToSync && !hasLoadedOnce;
+
     return (
       <main
         id="obs-stream-overlay"
-        className="fixed inset-0 w-screen h-screen bg-transparent overflow-hidden select-none p-0 m-0"
+        className={`fixed inset-0 w-screen h-screen bg-transparent overflow-hidden select-none p-0 m-0 transition-all duration-700 ease-out ${
+          shouldHideForLoading ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'
+        }`}
       >
         <div className="absolute top-0 left-0 p-4">
           <OverlayWidget
