@@ -188,6 +188,14 @@ export default function App() {
       const apiKeyParam = urlParams.get('apiKey');
       if (apiKeyParam) baseConfig.henrik.apiKey = apiKeyParam;
 
+      const lastMatchesParam = urlParams.get('lastMatchesCount');
+      if (lastMatchesParam) {
+        const parsedCount = parseInt(lastMatchesParam, 10);
+        if (!isNaN(parsedCount) && parsedCount >= 1 && parsedCount <= 5) {
+          baseConfig.henrik.lastMatchesCount = parsedCount;
+        }
+      }
+
       // Toggle parameters
       if (baseConfig.toggles) {
         Object.keys(baseConfig.toggles).forEach((key) => {
@@ -366,6 +374,7 @@ export default function App() {
     if (config.henrik.tag) params.set('tag', config.henrik.tag);
     if (config.henrik.region) params.set('region', config.henrik.region);
     if (config.henrik.apiKey) params.set('apiKey', config.henrik.apiKey);
+    if (config.henrik.lastMatchesCount) params.set('lastMatchesCount', String(config.henrik.lastMatchesCount));
 
     // Toggles
     if (config.toggles) {

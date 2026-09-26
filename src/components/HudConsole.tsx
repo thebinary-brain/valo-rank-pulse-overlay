@@ -92,9 +92,11 @@ export const HudConsole: React.FC<HudConsoleProps> = ({
   const handleLastMatchesChange = (count: number) => {
     const validCount = Math.min(5, Math.max(1, count));
     onChange((prev) => {
-      const netRR = (prev.recentMatches || [])
+      const todayStr = new Date().toDateString();
+      const todayMatches = (prev.recentMatches || [])
         .slice(0, validCount)
-        .reduce((acc, m) => acc + (m.rrChange || 0), 0);
+        .filter((m) => m.timestamp && new Date(m.timestamp).toDateString() === todayStr);
+      const netRR = todayMatches.reduce((acc, m) => acc + (m.rrChange || 0), 0);
 
       return {
         ...prev,
@@ -343,7 +345,7 @@ export const HudConsole: React.FC<HudConsoleProps> = ({
                   { key: 'showLastMatches', label: 'Last Matches' },
                   { key: 'showWinLoss', label: 'Win / Loss' },
                   { key: 'showWinStreak', label: 'Win Streak' },
-                  { key: 'showNetRR', label: 'Net RR' },
+                  { key: 'showNetRR', label: 'Net RR (Daily)' },
                 ].map(({ key, label }) => {
                   const isCompactPill = config.theme === 'compact_pill';
                   const isWinLossDisabled = isCompactPill && key === 'showWinLoss';
@@ -519,9 +521,11 @@ export const HudConsole: React.FC<HudConsoleProps> = ({
                     let netRR = prev.netRR;
                     if (newTheme === 'compact_pill' && lastMatchesCount > 3) {
                       lastMatchesCount = 3;
-                      netRR = (prev.recentMatches || [])
+                      const todayStr = new Date().toDateString();
+                      const todayMatches = (prev.recentMatches || [])
                         .slice(0, 3)
-                        .reduce((acc, m) => acc + (m.rrChange || 0), 0);
+                        .filter((m) => m.timestamp && new Date(m.timestamp).toDateString() === todayStr);
+                      netRR = todayMatches.reduce((acc, m) => acc + (m.rrChange || 0), 0);
                     }
 
                     return {

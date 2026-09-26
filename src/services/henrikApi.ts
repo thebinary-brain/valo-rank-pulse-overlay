@@ -85,8 +85,14 @@ export async function fetchHenrikData(
     return {
       ...cached.data,
       isCached: true,
-      // Re-slice and compute netRR based on current user's matchLimit
-      netRR: cached.data.recentMatches.slice(0, matchLimit).reduce((acc, m) => acc + m.rrChange, 0),
+      // Re-slice and compute netRR based on today's matches within current user's matchLimit
+      netRR: (() => {
+        const todayStr = new Date().toDateString();
+        const todayMatches = cached.data.recentMatches
+          .slice(0, matchLimit)
+          .filter((m) => m.timestamp && new Date(m.timestamp).toDateString() === todayStr);
+        return todayMatches.reduce((acc, m) => acc + m.rrChange, 0);
+      })(),
     };
   }
 
@@ -326,8 +332,12 @@ export async function fetchHenrikData(
       }
     }
 
-    // Net RR across active matches
-    const netRR = activeMatches.reduce((acc, m) => acc + m.rrChange, 0);
+    // Net RR (Daily) across active matches played today (current calendar day)
+    const todayStr = new Date().toDateString();
+    const todayMatches = activeMatches.filter(
+      (m) => m.timestamp && new Date(m.timestamp).toDateString() === todayStr
+    );
+    const netRR = todayMatches.reduce((acc, m) => acc + m.rrChange, 0);
 
     const result: HenrikFetchResult = {
       success: true,

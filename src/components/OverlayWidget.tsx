@@ -395,12 +395,14 @@ export const OverlayWidget: React.FC<OverlayWidgetProps> = ({
   };
 
   // -------------------------------------------------------------
-  // Configurable Net RR Tag (Dynamically syncs with displayed matches)
+  // Configurable Net RR (Daily) Tag (Dynamically syncs with displayed matches for the current day)
   // -------------------------------------------------------------
   const renderNetRR = () => {
     if (!showNetRR) return null;
 
-    const count = Math.min(5, Math.max(1, config.henrik?.lastMatchesCount || 5));
+    const isCompactPill = config.theme === 'compact_pill';
+    const maxAllowed = isCompactPill ? 3 : 5;
+    const count = Math.min(maxAllowed, Math.max(1, config.henrik?.lastMatchesCount || maxAllowed));
     const hasConfiguredApi = Boolean(config.henrik?.apiKey && config.henrik.apiKey.trim());
     const matches = (
       config.recentMatches && config.recentMatches.length > 0
@@ -410,11 +412,17 @@ export const OverlayWidget: React.FC<OverlayWidgetProps> = ({
         : DEFAULT_RECENT_MATCHES
     ).slice(0, count);
 
-    // If matches are present, active Net RR is computed across displayed matches
+    // Filter matches to only keep those from today (current calendar date in local timezone)
+    const todayStr = new Date().toDateString();
+    const todayMatches = matches.filter(
+      (m) => m.timestamp && new Date(m.timestamp).toDateString() === todayStr
+    );
+
+    // If matches are present, active Net RR is computed across displayed matches played today
     const netRRValue =
-      matches.length > 0
-        ? matches.reduce((acc, m) => acc + m.rrChange, 0)
-        : config.netRR;
+      todayMatches.length > 0
+        ? todayMatches.reduce((acc, m) => acc + m.rrChange, 0)
+        : 0;
 
     const isPos = netRRValue > 0;
     const isZero = netRRValue === 0;
@@ -428,13 +436,14 @@ export const OverlayWidget: React.FC<OverlayWidgetProps> = ({
             ? 'bg-gray-800 text-gray-300 border border-gray-700'
             : 'bg-rose-500/15 text-rose-400 border border-rose-500/30'
         }`}
+        title="Net RR (Daily) - RR won or lost today"
       >
         {isPos ? (
           <TrendingUp className="w-3 h-3" />
         ) : isZero ? null : (
           <TrendingDown className="w-3 h-3" />
         )}
-        <span>{isPos ? `+${netRRValue}` : netRRValue} RR</span>
+        <span>{isPos ? `+${netRRValue}` : netRRValue} RR (Daily)</span>
       </div>
     );
   };
